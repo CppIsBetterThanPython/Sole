@@ -35,7 +35,7 @@ namespace graphics {
             return pixels[index];
         }
 
-        vector<Colour> operator [](size_t index) const {
+        const vector<Colour>& operator [](size_t index) const {
             return pixels[index];
         }
     };
@@ -150,7 +150,13 @@ namespace graphics {
     void Downscale(Pixels& pixels, size_t scalar);
 
     inline static void pixelToChar(const Colour& backgroundColour, const Colour& foregroundColour, std::string& buffer) {
-        buffer = consoleForegroundColourCode(foregroundColour) + consoleBackgroundColourCode(backgroundColour) + std::string(reinterpret_cast <const char*>(u8"▄"));
+        buffer.clear();
+        //buffer.append(consoleForegroundColourCode(foregroundColour));
+        //buffer.append(consoleBackgroundColourCode(backgroundColour));
+        //buffer.append("▄");
+        //buffer += std::string(reinterpret_cast <const char*>(u8"▄"));
+
+        std::format_to(std::back_inserter(buffer), "{}{}{}", consoleForegroundColourCode(foregroundColour), consoleBackgroundColourCode(backgroundColour), std::string(reinterpret_cast <const char*>(u8"▄")));
     }
 
     void PrintToConsoleBlock(const Pixels& pixels);

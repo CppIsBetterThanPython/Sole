@@ -41,14 +41,24 @@ inline void setCursorPosition(size_t x, size_t y)
 }
 
 
-inline std::string consoleForegroundColourCode(Colour colour) {
+inline const char* consoleForegroundColourCode(Colour colour) {
     colour = colour * 255;
-    return "\x1b[38;2;" + std::to_string((int)colour.r) + ";" + std::to_string((int)colour.g) + ";" + std::to_string((int)colour.b) + "m";
+
+    static char buffer[22];
+
+    snprintf(buffer, sizeof(buffer), "\x1b[38;2;%d;%d;%dm", (int)colour.r, (int)colour.g, (int)colour.b);
+
+    return buffer;
 }
 
-inline std::string consoleBackgroundColourCode(Colour colour) {
+inline const char* consoleBackgroundColourCode(Colour colour) {
     colour = colour * 255;
-    return "\x1b[48;2;" + std::to_string((int)colour.r) + ";" + std::to_string((int)colour.g) + ";" + std::to_string((int)colour.b) + "m";
+
+    static char buffer[22];
+
+    snprintf(buffer, sizeof(buffer), "\x1b[48;2;%d;%d;%dm", (int)colour.r, (int)colour.g, (int)colour.b);
+
+    return buffer;
 }
 
 inline std::string cls() {
