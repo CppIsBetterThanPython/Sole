@@ -201,12 +201,19 @@ static void graphics::bottomTriangleRasterisation(vector<point3D> face, ZBuffer&
     }
 }
 
+bool backFaceCull(vector<point3D> vertices) {
+    return (vertices[1].x - vertices[0].x) * (vertices[2].y - vertices[0].y) - (vertices[1].y - vertices[0].y) * (vertices[2].x - vertices[0].x) >= -Epsilon;
+}
+
 graphics::Pixels graphics::ScanLineRasterise(const vector<MeshBase>& ScreenData, const dimensions outputSize, const Light* light) {
     ZBuffer zBuffer({ outputSize.x, outputSize.y });
 
     for (MeshBase mesh : ScreenData) {
         for (Face face : mesh.indices) {
             vector<point3D> vertices = { mesh.vertices[face.indices[0]], mesh.vertices[face.indices[1]], mesh.vertices[face.indices[2]] };
+
+            if (backFaceCull(vertices))
+                continue;
 
             std::sort(vertices.begin(), vertices.end(), [](const point3D& a, const point3D& b) {
                 return a.y > b.y;
