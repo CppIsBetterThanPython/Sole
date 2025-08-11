@@ -81,8 +81,8 @@ namespace graphics {
         }
     };
 
-    inline vector<MeshBase> TransformVectors(vector<MeshBase> meshData, const Matrix& matrix) {
-        for (MeshBase& Mesh : meshData) {
+    inline vector<RenderMeshBase> TransformVertices(vector<RenderMeshBase> meshData, const Matrix& matrix) {
+        for (RenderMeshBase& Mesh : meshData) {
             Mesh.TransformVertices(matrix);
         }
 
@@ -97,22 +97,42 @@ namespace graphics {
         return meshData;
     }
 
-    inline static point3D intersectionByPlane(point3D point1, point3D point2, Plane plane) {
-        vector3D edgeVector = point2 - point1;
+    inline vector<RenderMeshBase> PerspectiveDivide(vector<RenderMeshBase> meshData) {
+        for (RenderMeshBase& Mesh : meshData) {
+            Mesh.PerspectiveDivide();
+        }
 
-        double numerator = dot(plane.normal, plane.point) - dot(plane.normal, point1);
-        double denominator = dot(plane.normal, edgeVector);
+        return meshData;
+    }
 
-        double intersectionFactor = numerator / denominator;
+    inline vector<MeshBase> ConvertToCartesian(vector<RenderMeshBase> meshData) {
+        vector<MeshBase> meshDataCartesian;
 
-        point3D intersectionPoint = point1 + edgeVector * intersectionFactor;
+        meshDataCartesian.reserve(meshData.size());
+
+        for (RenderMeshBase mesh : meshData) {
+            meshDataCartesian.push_back(static_cast<MeshBase>(mesh));
+        }
+
+        return meshDataCartesian;
+    }
+
+    inline static point4D intersectionByPlane(point4D point1, point4D point2, vector4D plane) {
+        vector4D edgeVector = point2 - point1;
+
+        double dist1 = dot(plane, point1);
+        double dist2 = dot(plane, point2);
+
+        double intersectionFactor = dist1 / (dist1 - dist2);
+
+        point4D intersectionPoint = point1 + edgeVector * intersectionFactor;
 
         return intersectionPoint;
     }
 
-    static bool clipByPlane(Face face, Plane plane, MeshBase& meshBase);
+    static bool clipByPlane(Face face, vector4D plane, RenderMeshBase& meshBase);
 
-    vector<MeshBase> ClipFaces(vector<MeshBase> NDCData, Camera* camera);
+    vector<RenderMeshBase> ClipFaces(vector<RenderMeshBase> NDCData, Camera* camera);
 
     template<typename T1, typename T2, typename T3>
     inline static auto edgeFunction(const T1& a, const T2& b, const T3& c) {

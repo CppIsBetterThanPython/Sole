@@ -109,6 +109,56 @@ struct MeshBase {
     }
 };
 
+struct RenderMeshBase {
+    vector <point4D> vertices;
+    vector <Face> indices;
+
+    RenderMeshBase(MeshBase meshBase) : indices(meshBase.indices) {
+        vertices.reserve(meshBase.vertices.size());
+
+        for (point3D vertice : meshBase.vertices) {
+            vertices.push_back(static_cast<point4D>(vertice));
+        }
+    }
+
+    void TransformNormals(const Matrix& matrix) {
+        for (Face& face : indices) {
+            face.normal = normalise(matrix * face.normal);
+        }
+    }
+
+    void TransformVertices(const Matrix& matrix) {
+        for (point4D& vertice : vertices) {
+            vertice = matrix * vertice;
+        }
+    }
+
+    void Transform(const Matrix& matrix) {
+        TransformNormals(matrix);
+        TransformVertices(matrix);
+    }
+
+    void PerspectiveDivide() {
+        for (point4D& vertice : vertices) {
+            vertice.perspectiveDivide();
+        }
+    }
+
+    explicit operator MeshBase() {
+        MeshBase meshBase;
+
+        meshBase.indices = indices;
+
+        meshBase.vertices.reserve(vertices.size());
+
+        for (point4D vertice : vertices) {
+            meshBase.vertices.push_back(static_cast<point3D>(vertice));
+        }
+
+        return meshBase;
+    }
+};
+
 class Mesh : public Object {
 public:
     MeshBase data;
@@ -165,10 +215,10 @@ public:
         double depth = farClipPlane - nearClipPlane;
 
         return {
-            {-focalLength / aspectRatio, 0,           0,                                           0},
-            {0,                          focalLength, 0,                                           0},
-            {0,                          0,          -(farClipPlane + nearClipPlane) / (depth * 2), 1.5-(2 * nearClipPlane * farClipPlane) / depth},
-            {0,                          0,          -1,                                           0}
+            {focalLength / aspectRatio, 0,           0,                                           0},
+            {0,                          -focalLength, 0,                                           0},
+            {0,                          0,          (farClipPlane + nearClipPlane) / depth, -(2 * nearClipPlane * farClipPlane) / depth},
+            {0,                          0,          1,                                           0}
         };
     }
 

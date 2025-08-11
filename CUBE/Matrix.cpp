@@ -96,6 +96,18 @@ Matrix::operator std::string() const {
     return output;
 }
 
+Matrix::operator vector3D() const {
+    if (size.x != 1 || size.y != 4) {
+        throw std::invalid_argument("Cannot convert matrix to point3D: expected 1x4 column vector.");
+    }
+
+    double x = matrix[0][0];
+    double y = matrix[1][0];
+    double z = matrix[2][0];
+
+    return vector3D{ x, y, z };
+}
+
 Matrix::operator point3D() const {
     if (size.x != 1 || size.y != 4) {
         throw std::invalid_argument("Cannot convert matrix to point3D: expected 1x4 column vector.");
@@ -115,7 +127,7 @@ Matrix::operator point3D() const {
     return point3D{ x, y, z };
 }
 
-Matrix::operator vector3D() const {
+Matrix::operator point4D() const {
     if (size.x != 1 || size.y != 4) {
         throw std::invalid_argument("Cannot convert matrix to point3D: expected 1x4 column vector.");
     }
@@ -123,27 +135,36 @@ Matrix::operator vector3D() const {
     double x = matrix[0][0];
     double y = matrix[1][0];
     double z = matrix[2][0];
+    double w = matrix[3][0];
 
-    return vector3D{ x, y, z };
+    return point4D{ x, y, z, w };
 }
 
-
-point3D::operator Matrix() const {
-    vector<vector<double>> vectorForm = { {x},
-                                          {y},
-                                          {z},
-                                          {1} };
-
-    return Matrix(vectorForm);
-}
-
-vector3D::operator Matrix() const {
-    vector<vector<double>> vectorForm = { {x},
-                                          {y},
-                                          {z},
+Matrix::Matrix(const vector3D& vector) {
+    std::vector<std::vector<double>> vectorForm = { {vector.x},
+                                          {vector.y},
+                                          {vector.z},
                                           {0} };
 
-    return Matrix(vectorForm);
+    *this = Matrix(vectorForm);
+}
+
+Matrix::Matrix(const point3D& point) {
+    vector<vector<double>> vectorForm = { {point.x},
+                                          {point.y},
+                                          {point.z},
+                                          {1} };
+
+    *this = Matrix(vectorForm);
+}
+
+Matrix::Matrix(const point4D& point) {
+    vector<vector<double>> vectorForm = { {point.x},
+                                          {point.y},
+                                          {point.z},
+                                          {point.w} };
+
+    *this = Matrix(vectorForm);
 }
 
 // Transform Matrices

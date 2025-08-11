@@ -2,18 +2,18 @@
 
 #include "Graphics.h"
 
-static bool graphics::clipByPlane(Face face, Plane plane, MeshBase& meshBase) {
-    vector<point3D> faceVertices = { meshBase.vertices[face.indices[0]], meshBase.vertices[face.indices[1]], meshBase.vertices[face.indices[2]] };
+static bool graphics::clipByPlane(Face face, vector4D plane, RenderMeshBase& meshBase) {
+    vector<point4D> faceVertices = { meshBase.vertices[face.indices[0]], meshBase.vertices[face.indices[1]], meshBase.vertices[face.indices[2]] };
 
-    vector<point3D> clippedTriangle;
+    vector<point4D> clippedTriangle;
 
-    point3D previousPoint = faceVertices.back();
-    bool previousPointInside = dot(plane.normal, previousPoint - plane.point) >= 0;
+    point4D previousPoint = faceVertices.back();
+    bool previousPointInside = dot(plane, previousPoint) >= -Epsilon;
 
     int amountOutside = 0;
 
-    for (const point3D& currentPoint : faceVertices) {
-        bool currentPointInside = dot(plane.normal, currentPoint - plane.point) >= 0;
+    for (const point4D& currentPoint : faceVertices) {
+        bool currentPointInside = dot(plane, currentPoint) >= -Epsilon;
 
         if (currentPointInside != previousPointInside) {
             auto newEnd = std::remove(meshBase.indices.begin(), meshBase.indices.end(), face);
@@ -87,33 +87,33 @@ static bool graphics::clipByPlane(Face face, Plane plane, MeshBase& meshBase) {
     return true;
 }
 
-vector<MeshBase> graphics::ClipFaces(vector<MeshBase> NDCData, Camera* camera) {
-    enum clippingState { inside, outside };
-    vector<vector<clippingState> > clippingStates(NDCData.size());
+vector<RenderMeshBase> graphics::ClipFaces(vector<RenderMeshBase> clipData, Camera* camera) {
 
-    for (int i = 0; i < NDCData.size(); i++) {
-        MeshBase& NDCMesh = NDCData[i];
+    for (RenderMeshBase& clipMesh : clipData) {
 
+        // TODO: Implement Back Face Culling properly
         // Back Face Culling
-        //NDCMesh.indices.erase(std::remove_if(
-        //    NDCMesh.indices.begin(),
-        //    NDCMesh.indices.end(),
+        //clipMesh.indices.erase(std::remove_if(
+        //    clipMesh.indices.begin(),
+        //    clipMesh.indices.end(),
         //    [camera](Face face) {
         //        return dot(face.normal, camera->getDirection()) <= 0;
         //    }),
-        //    NDCMesh.indices.end());
+        //    clipMesh.indices.end());
 
-        vector<Plane> clippingPlanes = { { { 0, 0, 0 }, { 0, 0, 1 } },
-                                         { { 0, 0, 1 }, { 0, 0,-1 } },
-                                         { {-1, 0, 0 }, { 1, 0, 0 } },
-                                         { { 1, 0, 0 }, {-1, 0, 0 } },
-                                         { { 0, 1, 0 }, { 0,-1, 0 } },
-                                         { { 0,-1, 0 }, { 0, 1, 0 } } };
+        vector<vector4D> clippingPlanes = {
+                                                      {  1,  0,  0,  1 },
+                                                      { -1,  0,  0,  1 },
+                                                      {  0,  1,  0,  1 },
+                                                      {  0, -1,  0,  1 },
+                                                      {  0,  0,  1,  1 },
+                                                      {  0,  0, -1,  1 } 
+                                                  };
 
-        for (size_t j = 0; j < NDCMesh.indices.size();) {
+        for (size_t j = 0; j < clipMesh.indices.size();) {
             bool wasClipped = false;
-            for (const Plane& clippingPlane : clippingPlanes) {
-                wasClipped = clipByPlane(NDCMesh.indices[j], clippingPlane, NDCMesh);
+            for (const vector4D& clippingPlane : clippingPlanes) {
+                wasClipped = clipByPlane(clipMesh.indices[j], clippingPlane, clipMesh);
                 if (wasClipped) {
                     break;
                 }
@@ -125,16 +125,15 @@ vector<MeshBase> graphics::ClipFaces(vector<MeshBase> NDCData, Camera* camera) {
         }
     }
 
-    return NDCData;
+    return clipData;
 }
 
-template<typename T1, typename T2, typename T3>
-static auto edgeFunction(const T1& a, const T2& b, const T3& c) {
+static auto edgeFunction(const point3D& a, const point3D& b, const point3D& c) {
     return (c.x - a.x) * (b.y - a.y) - (c.y - a.y) * (b.x - a.x);
 }
 
 static graphics::zPixel& graphics::interpolatePixel(const int& x, const int& y, const vector<point3D>& face, const vector3D& faceNormal, const vector3D& lightDirection) {
-    point pixelpoint = { x + 0.5, y - 0.5 };
+    point3D pixelpoint = { x + 0.5, y - 0.5, 0 };
 
     double area  = graphics::edgeFunction(face[0], face[1], face[2]);
     double alpha = graphics::edgeFunction(face[1], face[2], pixelpoint) / area;

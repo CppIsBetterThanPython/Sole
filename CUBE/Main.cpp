@@ -13,13 +13,9 @@ int main() {
 
     Camera* camera_ = dynamic_cast<Camera*>(camera);
 
-    point3D point = camera_->getPerspectiveMatrix() * point3D { 0, 0, 5 };
-
-    //camera->orientation = Quaternion{ 0.82533561490967877, 0.0, -0.56464247339503559, 0.0 };
-
     Object* light = ObjectFactory::CreateDirectionLight(MyScene, nullptr, Angle{ -0.5, -0.5, 0.0 });
 
-    Object* MyCube = ObjectFactory::CreateCube(MyScene, nullptr, point3D{ 0, 0, -7 }, 2.0, Angle{ 0.0, 0.0, 0.0 });
+    Object* MyCube = ObjectFactory::CreateCube(MyScene, nullptr, point3D{ 0, 0, 7 }, 2.0, Angle{ 0.0, 0.0, 0.0 }, rotate);
 
     // Define key handlers
     {
@@ -47,22 +43,22 @@ int main() {
 
         MyScene.keyDownHandlers['W'] = [MyCube, moveSpeed](double duration) mutable {
             if (duration == 0) {
-                MyCube->velocity += vector3D{ 0, 0, 1 } *moveSpeed;
+                MyCube->velocity += vector3D{ 0, 1, 0 } *moveSpeed;
             }
             };
 
         MyScene.keyUpHandlers['W'] = [MyCube, moveSpeed](double duration) mutable {
-            MyCube->velocity -= vector3D{ 0, 0, 1 } *moveSpeed;
+            MyCube->velocity -= vector3D{ 0, 1, 0 } *moveSpeed;
             };
 
         MyScene.keyDownHandlers['S'] = [MyCube, moveSpeed](double duration) mutable {
             if (duration == 0) {
-                MyCube->velocity += vector3D{ 0, 0, -1 } *moveSpeed;
+                MyCube->velocity += vector3D{ 0, -1, 0 } *moveSpeed;
             }
             };
 
         MyScene.keyUpHandlers['S'] = [MyCube, moveSpeed](double duration) mutable {
-            MyCube->velocity -= vector3D{ 0, 0, -1 } *moveSpeed;
+            MyCube->velocity -= vector3D{ 0, -1, 0 } *moveSpeed;
             };
 
         MyScene.keyDownHandlers['I'] = [camera, rotate](double duration) mutable {

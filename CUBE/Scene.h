@@ -61,7 +61,7 @@ public:
 
     void Render() {
         std::vector<Mesh*> meshObjects;
-        vector<MeshBase> meshData;
+        vector<RenderMeshBase> meshData;
         Camera* camera{};
         Light* light{};
 
@@ -85,15 +85,17 @@ public:
             throw std::runtime_error("No camera in scene!");
         }
 
-        vector<MeshBase> cameraViewData = graphics::TransformVectors(meshData, camera->getViewMatrix());
+        vector<RenderMeshBase> clipData = graphics::TransformVertices(meshData, camera->getPerspectiveMatrix() * camera->getViewMatrix());
 
-        vector<MeshBase> NDCData = graphics::TransformVectors(cameraViewData, camera->getPerspectiveMatrix());
+        clipData = graphics::ClipFaces(clipData, camera);
 
-        NDCData = graphics::ClipFaces(NDCData, camera);
+        vector<RenderMeshBase> NDCData = graphics::PerspectiveDivide(clipData);
 
-        vector<MeshBase> ScreenData = graphics::TransformVectors(NDCData, camera->getScreenMatrix());
+        vector<RenderMeshBase> ScreenData = graphics::TransformVertices(NDCData, camera->getScreenMatrix());
 
-        graphics::Pixels pixels = graphics::ScanLineRasterise(ScreenData, camera->viewPortSize * camera->downscaling, light);
+        vector<MeshBase> ScreenDataCartesian = graphics::ConvertToCartesian(ScreenData);
+
+        graphics::Pixels pixels = graphics::ScanLineRasterise(ScreenDataCartesian, camera->viewPortSize * camera->downscaling, light);
 
         graphics::Downscale(pixels, camera->downscaling);
 
