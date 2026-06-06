@@ -3,7 +3,7 @@
 #include <chrono>
 #include <thread>
 
-#include "Graphics.h"
+#include "Graphics.hpp"
 
 class Scene {
 public:

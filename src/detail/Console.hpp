@@ -10,7 +10,7 @@
 #define WIN32_LEAN_AND_MEAN
 #endif
 
-#include "Object.h"
+#include "Object.hpp"
 
 #ifdef _WIN32
 static const HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);

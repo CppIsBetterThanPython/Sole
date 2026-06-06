@@ -1,4 +1,4 @@
-#include "Scene.h"
+#include "Scene.hpp"
 
 Object* ObjectFactory::CreateCube(Scene& scene, Object* parent, point3D origin, double sideLength,
     Angle orientation, std::function<void(Object&, float)> onUpdate)

@@ -1,4 +1,4 @@
-#include "Math.h"
+#include "Math.hpp"
 
 Matrix::Matrix(dimensions size) : size(size) {
     matrix = vector<vector<double>>(size.y, vector<double>(size.x, 0));

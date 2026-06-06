@@ -1,6 +1,6 @@
 #include <algorithm>
 
-#include "Graphics.h"
+#include "Graphics.hpp"
 
 static bool graphics::clipByPlane(Face face, vector4D plane, RenderMeshBase& meshBase) {
     vector<point4D> faceVertices = { meshBase.vertices[face.indices[0]], meshBase.vertices[face.indices[1]], meshBase.vertices[face.indices[2]] };

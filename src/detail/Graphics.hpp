@@ -1,9 +1,9 @@
 ﻿#pragma once
 #include <cassert>
 
-#include "math.h"
-#include "Console.h"
-#include "Object.h"
+#include "Math.hpp"
+#include "Console.hpp"
+#include "Object.hpp"
 
 namespace graphics {
     struct zPixel {

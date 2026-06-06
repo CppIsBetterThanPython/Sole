@@ -1,4 +1,4 @@
-﻿#include "Graphics.h"
+﻿#include "Graphics.hpp"
 
 void graphics::PrintToConsoleBlock(const Pixels& pixels) {
     ShowConsoleCursor(false);

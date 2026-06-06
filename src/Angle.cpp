@@ -1,4 +1,4 @@
-#include "Math.h"
+#include "Math.hpp"
 
 Quaternion::Quaternion(Angle angle) {
     angle = angle.Negate();
