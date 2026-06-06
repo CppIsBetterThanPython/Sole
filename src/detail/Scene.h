@@ -136,8 +136,8 @@ inline void GameLoop(Scene& firstScene) {
         currentScene.Render();
 
         // 3. Control frame rate (optional, e.g., ~60 FPS)
-        if (1000.0/currentScene.FrameRate - deltaTime >= 0)
-            std::this_thread::sleep_for(std::chrono::milliseconds( static_cast<int>(1000.0 / currentScene.FrameRate - deltaTime) ));
+        if (1000/currentScene.FrameRate - deltaTime >= 0)
+            std::this_thread::sleep_for(std::chrono::milliseconds( static_cast<int>(1000 / currentScene.FrameRate - deltaTime) ));
     }
 }
 
