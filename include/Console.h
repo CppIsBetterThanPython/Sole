@@ -2,43 +2,45 @@
 
 #include <format>
 #include <iostream>
+#ifdef _WIN32
 #include <Windows.h>
 #include <io.h>
 #include <fcntl.h>
 #define NOMINMAX
 #define WIN32_LEAN_AND_MEAN
+#endif
 
 #include "Object.h"
 
+#ifdef _WIN32
 static const HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
+#endif
 
 inline void EnableVirtualTerminal() {
+#ifdef _WIN32
     HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
     DWORD dwMode = 0;
     GetConsoleMode(hOut, &dwMode);
     SetConsoleMode(hOut, dwMode | ENABLE_VIRTUAL_TERMINAL_PROCESSING);
+#endif
 }
 
 inline void EnableUnicodeOutput() {
+#ifdef _WIN32
     // Set console output code page to UTF-8
     SetConsoleOutputCP(CP_UTF8);
+#endif
 }
 
 inline void ShowConsoleCursor(bool showFlag)
 {
-    CONSOLE_CURSOR_INFO     cursorInfo;
-
-    GetConsoleCursorInfo(hOut, &cursorInfo);
-    cursorInfo.bVisible = showFlag; // set the cursor visibility
-    SetConsoleCursorInfo(hOut, &cursorInfo);
+	std::cout << ((showFlag) ? "\x1b[28m" : "\x1b[8m");
 }
 
 // x is the column, y is the row. The origin (0,0) is top-left.
 inline void setCursorPosition(size_t x, size_t y)
 {
-    std::cout.flush();
-    COORD coord = { (SHORT)x, (SHORT)y };
-    SetConsoleCursorPosition(hOut, coord);
+	std::cout << "\x1b[" << y << ";" << x << "H";
 }
 
 

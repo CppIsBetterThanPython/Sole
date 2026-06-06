@@ -139,7 +139,7 @@ namespace graphics {
         return (c.x - a.x) * (b.y - a.y) - (c.y - a.y) * (b.x - a.x);
     }
 
-    static zPixel& interpolatePixel(const int& x, const int& y, const vector<point3D>& face, const vector3D& faceNormal, const vector3D& lightDirection);
+    static zPixel interpolatePixel(const int& x, const int& y, const vector<point3D>& face, const vector3D& faceNormal, const vector3D& lightDirection);
 
     static void topTriangleRasterisation(vector<point3D> face, ZBuffer& zBuffer, const vector3D& faceNormal, const vector3D& lightDirection);
 

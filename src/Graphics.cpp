@@ -132,7 +132,7 @@ static auto edgeFunction(const point3D& a, const point3D& b, const point3D& c) {
     return (c.x - a.x) * (b.y - a.y) - (c.y - a.y) * (b.x - a.x);
 }
 
-static graphics::zPixel& graphics::interpolatePixel(const int& x, const int& y, const vector<point3D>& face, const vector3D& faceNormal, const vector3D& lightDirection) {
+static graphics::zPixel graphics::interpolatePixel(const int& x, const int& y, const vector<point3D>& face, const vector3D& faceNormal, const vector3D& lightDirection) {
     point3D pixelpoint = { x + 0.5, y - 0.5, 0 };
 
     double area  = graphics::edgeFunction(face[0], face[1], face[2]);
@@ -142,7 +142,7 @@ static graphics::zPixel& graphics::interpolatePixel(const int& x, const int& y, 
 
     double pixelZ = face[0].z * alpha + face[1].z * beta + face[2].z * gamma;
 
-    double intensity = max(0.0, dot(faceNormal, lightDirection));
+    double intensity = std::max(0.0, dot(faceNormal, lightDirection));
 
     zPixel pixel = { pixelZ, Colour{1.0, 1.0, 1.0} *intensity };
 
@@ -168,7 +168,7 @@ static void graphics::topTriangleRasterisation(vector<point3D> face, ZBuffer& zB
         for (int x = (int)std::round(face[0].x - positiveGradient * (face[0].y - y)); x < (int)std::round(face[0].x - negativeGradient * (face[0].y - y)); x++) {
             assert(x > 0 || x <= zBuffer.size.x || y > 0 || y <= zBuffer.size.y);
 
-            zPixel& pixel = interpolatePixel(x, y, face, faceNormal, lightDirection);
+            zPixel pixel = interpolatePixel(x, y, face, faceNormal, lightDirection);
             
             zBuffer[x][y] = (pixel.z < zBuffer[x][y].z) ? pixel : zBuffer[x][y];
         }
@@ -194,7 +194,7 @@ static void graphics::bottomTriangleRasterisation(vector<point3D> face, ZBuffer&
         for (int x = (int)std::round(face[2].x + negativeGradient * (y - face[2].y)); x < (int)std::round(face[2].x + positiveGradient * (y - face[2].y)); x++) {
             assert(x > 0 || x <= zBuffer.size.x || y > 0 || y <= zBuffer.size.y);
 
-            zPixel& pixel = interpolatePixel(x, y, face, faceNormal, lightDirection);
+            zPixel pixel = interpolatePixel(x, y, face, faceNormal, lightDirection);
 
             zBuffer[x][y] = (pixel.z < zBuffer[x][y].z) ? pixel : zBuffer[x][y];
         }

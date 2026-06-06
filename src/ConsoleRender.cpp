@@ -1,7 +1,7 @@
 ﻿#include "Graphics.h"
 
 void graphics::PrintToConsoleBlock(const Pixels& pixels) {
-    ShowConsoleCursor(FALSE);
+    ShowConsoleCursor(false);
 
     static std::string buffer;
     static vector<vector<std::string>> previousScreen = vector<vector<std::string>>(
@@ -40,7 +40,7 @@ void graphics::PrintToConsoleBlock(const Pixels& pixels) {
 }
 
 void graphics::PrintToConsoleAscii(const Pixels& zBuffer) {
-    ShowConsoleCursor(FALSE);
+    ShowConsoleCursor(false);
 
     static vector<vector<char>> previousScreen = vector<vector<char>>(
         zBuffer.size.x,

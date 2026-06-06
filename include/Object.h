@@ -1,7 +1,7 @@
 #pragma once
 #include <functional>
 
-#include "math.h"
+#include "Math.h"
 
 struct Colour {
     double r = 0.0;

@@ -30,7 +30,8 @@ public:
 
     void PollInput(double deltaTime) {
         for (auto& [key, _] : keyDownHandlers) {
-            SHORT state = GetAsyncKeyState(key);
+            // SHORT state = GetAsyncKeyState(key);
+	    short state = 0;
             bool isDown = (state & 0x8000) != false;
             bool wasDown = previousKeyState[key].state == keyStates::DOWN;
 

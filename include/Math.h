@@ -6,7 +6,7 @@
 #include <type_traits>
 #include <numbers>
 
-constexpr auto M_PI = std::numbers::pi;
+constexpr auto pi = std::numbers::pi;
 constexpr double Epsilon = 1e-11;
 
 using std::vector, std::array;
