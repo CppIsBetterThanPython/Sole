@@ -11,7 +11,7 @@ Sole has a small demo in it of a cube spinning with flat shading.
 To run this, pull the repo, enter the directory in the terminal and run:
 
 ```
-cmake -S , -B build
+cmake -S . -B build
 cmake --build build
 ```
 
